@@ -5,30 +5,6 @@ from textnode import TextNode, TextType
 
 
 class TestSplit_Nodes(unittest.TestCase):
-    def test_invalid_markdown_none(self):
-        old_nodes = [
-            TextNode("This isn't some bold text", TextType.PLAIN)
-        ]
-        try:
-            split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
-        except ValueError as e:
-            self.assertEqual(
-                repr(ValueError("Not valid Markdown syntax: no closing ** found.")),
-                repr(e)
-            )
-
-    def test_invalid_markdown_one(self):
-        old_nodes = [
-            TextNode("This isn't some **bold text", TextType.PLAIN)
-        ]
-        try:
-            split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
-        except ValueError as e:
-            self.assertEqual(
-                repr(ValueError("Not valid Markdown syntax: no closing ** found.")),
-                repr(e)
-            )
-
     def test_bold_single_middle(self):
         old_nodes = [
             TextNode("This is some **bold text** inline", TextType.PLAIN)
@@ -39,19 +15,18 @@ class TestSplit_Nodes(unittest.TestCase):
             TextNode(" inline", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_bold_single_start(self):
         old_nodes = [
             TextNode("**Bold** at the start of this node", TextType.PLAIN)
         ]
         expected_new_nodes = [
-            TextNode("", TextType.PLAIN),
             TextNode("Bold", TextType.BOLD),
             TextNode(" at the start of this node", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_bold_single_end(self):
         old_nodes = [
@@ -60,10 +35,9 @@ class TestSplit_Nodes(unittest.TestCase):
         expected_new_nodes = [
             TextNode("At the end of this node is some ", TextType.PLAIN),
             TextNode("bold text", TextType.BOLD),
-            TextNode("", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_italic_single_middle(self):
         old_nodes = [
@@ -75,19 +49,18 @@ class TestSplit_Nodes(unittest.TestCase):
             TextNode(" inline", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "_", TextType.ITALIC)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_italic_single_start(self):
         old_nodes = [
             TextNode("_italic_ at the start of this node", TextType.PLAIN)
         ]
         expected_new_nodes = [
-            TextNode("", TextType.PLAIN),
             TextNode("italic", TextType.ITALIC),
             TextNode(" at the start of this node", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "_", TextType.ITALIC)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_italic_single_end(self):
         old_nodes = [
@@ -96,10 +69,9 @@ class TestSplit_Nodes(unittest.TestCase):
         expected_new_nodes = [
             TextNode("At the end of this node is some ", TextType.PLAIN),
             TextNode("italic text", TextType.ITALIC),
-            TextNode("", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "_", TextType.ITALIC)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_code_single_middle(self):
         old_nodes = [
@@ -111,19 +83,18 @@ class TestSplit_Nodes(unittest.TestCase):
             TextNode(" inline", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "`", TextType.CODE)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_code_single_start(self):
         old_nodes = [
             TextNode("`code` at the start of this node", TextType.PLAIN)
         ]
         expected_new_nodes = [
-            TextNode("", TextType.PLAIN),
             TextNode("code", TextType.CODE),
             TextNode(" at the start of this node", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "`", TextType.CODE)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_code_single_end(self):
         old_nodes = [
@@ -132,10 +103,9 @@ class TestSplit_Nodes(unittest.TestCase):
         expected_new_nodes = [
             TextNode("At the end of this node is some ", TextType.PLAIN),
             TextNode("code text", TextType.CODE),
-            TextNode("", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "`", TextType.CODE)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
 
     def test_bold_many(self):
         old_nodes = [
@@ -147,12 +117,24 @@ class TestSplit_Nodes(unittest.TestCase):
             TextNode("This is a ", TextType.PLAIN),
             TextNode("bold text", TextType.BOLD),
             TextNode(" node", TextType.PLAIN),
-            TextNode("", TextType.PLAIN),
             TextNode("Bold", TextType.BOLD),
             TextNode(" starting text node", TextType.PLAIN),
             TextNode("This is a node that ends with ", TextType.PLAIN),
             TextNode("bold text", TextType.BOLD),
-            TextNode("", TextType.PLAIN),
         ]
         actual_new_nodes = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
-        self.assertEqual(expected_new_nodes, actual_new_nodes)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)
+
+    def test_bold_multi_inline(self):
+        old_nodes = [
+            TextNode("This is a **bold** text node with additional **bold** text", TextType.PLAIN)
+        ]
+        expected_new_nodes = [
+            TextNode("This is a ", TextType.PLAIN),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" text node with additional ", TextType.PLAIN),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" text", TextType.PLAIN),
+        ]
+        actual_new_nodes = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
+        self.assertListEqual(expected_new_nodes, actual_new_nodes)

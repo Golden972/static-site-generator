@@ -9,18 +9,18 @@ def split_nodes_delimiter(
     for node in old_nodes:
         if node.text_type != TextType.PLAIN:
             new_nodes.append(node)
-
-        splits = []
-        print(f"{node.text=}")
-        split_text = node.text.split(delimiter, 2)
-        print(f"{split_text=}")
-        print(f"{len(split_text)}")
-        if len(split_text) != 3:
+            continue
+        split_nodes = []
+        split_text = node.text.split(delimiter)
+        if len(split_text) % 2 == 0:
             raise ValueError(f"Not valid Markdown syntax: no closing {delimiter} found.")
-        splits.append(TextNode(split_text[0], TextType.PLAIN)) # Plain text before delimiter
-        splits.append(TextNode(split_text[1], text_type)) # Inline text within delimiters
-        splits.append(TextNode(split_text[2], TextType.PLAIN)) # Plain text after delimiter
-
-        new_nodes.extend(splits)
+        for i in range(len(split_text)):
+            if split_text[i] == "":
+                continue
+            if i % 2 == 0:
+                split_nodes.append(TextNode(split_text[i], TextType.PLAIN))
+            else:
+                split_nodes.append(TextNode(split_text[i], text_type))
+        new_nodes.extend(split_nodes)
 
     return new_nodes

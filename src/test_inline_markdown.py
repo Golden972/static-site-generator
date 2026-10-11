@@ -348,3 +348,6 @@ class TestInlineMarkdown(unittest.TestCase):
     def test_text_textnodes_plain_only(self):
         nodes = text_to_textnodes("This is plain text with no inline markdown at all")
         self.assertListEqual([TextNode("This is plain text with no inline markdown at all", TextType.PLAIN)], nodes)
+
+if __name__ == "__main__":
+    unittest.main()

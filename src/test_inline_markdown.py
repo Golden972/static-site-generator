@@ -6,7 +6,9 @@ from inline_markdown import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
+from src.test_textnode import TestTextNode
 from textnode import TextNode, TextType
 
 
@@ -280,3 +282,69 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
             new_nodes,
         )
+
+
+    def test_text_to_textnodes(self):
+        nodes = text_to_textnodes("This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)")
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.PLAIN),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.PLAIN),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.PLAIN),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.PLAIN),
+                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(" and a ", TextType.PLAIN),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            nodes,
+        )
+
+    def test_text_to_textnodes_reverse_order(self):
+        nodes = text_to_textnodes("This is text with a [link](https://boot.dev), an ![obi wan image](https://i.imgur.com/fJrm4Vk.jpeg), a `code block`, and _italic_ and **bold** text")
+        self.assertListEqual(
+            [
+                TextNode("This is text with a ", TextType.PLAIN),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+                TextNode(", an ", TextType.PLAIN),
+                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJrm4Vk.jpeg"),
+                TextNode(", a ", TextType.PLAIN),
+                TextNode("code block", TextType.CODE),
+                TextNode(", and ", TextType.PLAIN),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" and ", TextType.PLAIN),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" text", TextType.PLAIN),
+            ],
+            nodes,
+        )
+
+    def test_text_to_textnodes_multiple(self):
+        nodes = text_to_textnodes("This is **text** with _italic_ and **bold** alternating _a few_ times with [two links](https://boot.dev) _thrown_ in the [middle](https://freecodecamp.org) **too**")
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.PLAIN),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with ", TextType.PLAIN),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" and ", TextType.PLAIN),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" alternating ", TextType.PLAIN),
+                TextNode("a few", TextType.ITALIC),
+                TextNode(" times with ", TextType.PLAIN),
+                TextNode("two links", TextType.LINK, "https://boot.dev"),
+                TextNode(" ", TextType.PLAIN),
+                TextNode("thrown", TextType.ITALIC),
+                TextNode(" in the ", TextType.PLAIN),
+                TextNode("middle", TextType.LINK, "https://freecodecamp.org"),
+                TextNode(" ", TextType.PLAIN),
+                TextNode("too", TextType.BOLD),
+            ],
+            nodes
+        )
+
+    def test_text_textnodes_plain_only(self):
+        nodes = text_to_textnodes("This is plain text with no inline markdown at all")
+        self.assertListEqual([TextNode("This is plain text with no inline markdown at all", TextType.PLAIN)], nodes)

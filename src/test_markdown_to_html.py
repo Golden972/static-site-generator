@@ -63,14 +63,15 @@ the **same** even with inline stuff
 > This is a quote
 > with some **bold** text
 > as well as some
-> _italic_ text
+>
+> _-- italic text_
 """
 
         node = markdown_to_html_node(md)
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><blockquote>This is a quote with some <b>bold</b> text as well as some <i>italic</i> text</blockquote></div>"
+            "<div><blockquote>This is a quote with some <b>bold</b> text as well as some  <i>-- italic text</i></blockquote></div>"
         )
 
     def test_unordered_list(self):

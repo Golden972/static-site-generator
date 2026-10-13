@@ -121,3 +121,7 @@ this is a paragraph with some _italic_ text
             html,
             "<div><h1>This is a heading one</h1><p>this is a paragraph with some <b>bold</b> text</p><h2>this is a heading two</h2><p>this is a paragraph with some <i>italic</i> text</p></div>"
         )
+
+
+if __name__ == "__main__":
+    unittest.main()

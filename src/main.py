@@ -2,7 +2,7 @@ import os
 import shutil
 
 from copy_static import copy_static
-from generate_page import generate_page
+from generate_page import generate_pages_recursive
 
 PUBLIC_DIR = "public"
 STATIC_DIR = "static"
@@ -20,7 +20,7 @@ def main() -> None:
     print(f"MKDIR: '{PUBLIC_DIR}'")
     copy_static(STATIC_DIR, PUBLIC_DIR)
 
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 
 if __name__ == "__main__":

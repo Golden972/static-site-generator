@@ -1,9 +1,11 @@
-from textnode import TextNode, TextType
+import os
+import shutil
+
+from copy_static import copy_static
 
 
 def main() -> None:
-    text_node = TextNode("Sample text content", TextType.LINK, "https://www.boot.dev")
-    print(text_node)
+    copy_static()
 
 
 if __name__ == "__main__":

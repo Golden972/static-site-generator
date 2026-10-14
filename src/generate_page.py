@@ -6,7 +6,7 @@ TITLE_PLACEHOLDER = "{{ Title }}"
 CONTENT_PLACEHOLDER = "{{ Content }}"
 
 
-def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str) -> None:
+def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str) -> None:
     dir_entries = os.listdir(dir_path_content)
     if len(dir_entries) == 0:
         return
@@ -18,12 +18,12 @@ def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir
                 raise ValueError(f"Specified path {content_path} is not a file or directory")
             os.mkdir(destination)
             print(f"MKDIR: '{destination}'")
-            generate_pages_recursive(content_path, template_path, destination)
+            generate_pages_recursive(content_path, template_path, destination, basepath)
         else:
-            generate_page(content_path, template_path, destination.removesuffix(".md") + ".html")
+            generate_page(content_path, template_path, destination.removesuffix(".md") + ".html", basepath)
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str) -> None:
     print(f"Generating page from '{from_path}' to '{dest_path}'")
     with open(from_path) as f:
         markdown = f.read()
@@ -32,7 +32,11 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     html_node = markdown_to_html_node(markdown)
     content = html_node.to_html()
     title = extract_title(markdown)
-    html_page = template.replace(TITLE_PLACEHOLDER, title).replace(CONTENT_PLACEHOLDER, content)
+    html_page = template
+    html_page = html_page.replace(TITLE_PLACEHOLDER, title)
+    html_page = html_page.replace(CONTENT_PLACEHOLDER, content)
+    html_page = html_page.replace('href="/', f'href="{basepath}')
+    html_page = html_page.replace('src="/', f'src="{basepath}')
     if not os.path.exists(os.path.dirname(dest_path)):
         os.makedirs(dest_path)
     with open(dest_path, "w") as f:
